@@ -1,0 +1,23 @@
+# Node modules (both frontend + backend)
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+
+# Frontend build (NOT needed in repo)
+frontend/dist/
+
+# Optional (if exists)
+build/
+.cache/
