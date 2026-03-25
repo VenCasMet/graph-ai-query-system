@@ -1,34 +1,38 @@
-const sqlite3 = require("sqlite3").verbose();
+const Database = require("better-sqlite3");
 
-const db = new sqlite3.Database("./data.db");
+const db = new Database("data.db");
 
-db.serialize(() => {
-  db.run(`
-    CREATE TABLE IF NOT EXISTS sales_orders (
-      id TEXT PRIMARY KEY
-    )
-  `);
+// Create tables (same as before)
+db.exec(`
+  CREATE TABLE IF NOT EXISTS sales_orders (
+    id TEXT PRIMARY KEY
+  );
 
-  db.run(`
-    CREATE TABLE IF NOT EXISTS deliveries (
-      id TEXT PRIMARY KEY,
-      sales_order_id TEXT
-    )
-  `);
+  CREATE TABLE IF NOT EXISTS deliveries (
+    id TEXT PRIMARY KEY,
+    sales_order_id TEXT
+  );
 
-  db.run(`
-    CREATE TABLE IF NOT EXISTS billing (
-      id TEXT PRIMARY KEY,
-      delivery_id TEXT
-    )
-  `);
+  CREATE TABLE IF NOT EXISTS billing (
+    id TEXT PRIMARY KEY,
+    delivery_id TEXT
+  );
 
-  db.run(`
-    CREATE TABLE IF NOT EXISTS journal_entries (
-      id TEXT PRIMARY KEY,
-      billing_id TEXT
-    )
-  `);
-});
+  CREATE TABLE IF NOT EXISTS journal_entries (
+    id TEXT PRIMARY KEY,
+    billing_id TEXT
+  );
+`);
 
-module.exports = db;
+// Wrapper to match your existing db.all(...) usage
+module.exports = {
+  all: (query, params = [], callback) => {
+    try {
+      const stmt = db.prepare(query);
+      const rows = stmt.all(params);
+      callback(null, rows);
+    } catch (err) {
+      callback(err, null);
+    }
+  }
+};
